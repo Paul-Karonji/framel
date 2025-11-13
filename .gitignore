@@ -1,0 +1,51 @@
+# Environment variables (contains sensitive API keys)
+.env
+.env.local
+.env.*.local
+
+# Firebase service account (contains private keys)
+framel-production-firebase-adminsdk-fbsvc-3a2d706deb.json
+*-firebase-adminsdk-*.json
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build output
+dist/
+build/
+*.js
+*.js.map
+!jest.config.js
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+.cache/
+
+#claude files
+.claude/
