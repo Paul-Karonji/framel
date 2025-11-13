@@ -4,6 +4,7 @@ import { AppError } from '../middleware/errorHandler';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import cartService from './cart.service';
 import productService from './product.service';
+import emailService from './email.service';
 import moment from 'moment';
 
 /**
@@ -12,6 +13,23 @@ import moment from 'moment';
  */
 class OrderService {
   private collection = db.collection('orders');
+
+  /**
+   * Get user email by user ID
+   */
+  private async getUserEmail(userId: string): Promise<string | null> {
+    try {
+      const userDoc = await db.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        return null;
+      }
+      const userData = userDoc.data();
+      return userData?.email || null;
+    } catch (error) {
+      console.error('Error fetching user email:', error);
+      return null;
+    }
+  }
 
   /**
    * Generate unique order ID
@@ -114,7 +132,20 @@ class OrderService {
       await cartService.clearCart(userId);
 
       const doc = await docRef.get();
-      return { id: doc.id, ...doc.data() } as Order;
+      const createdOrder = { id: doc.id, ...doc.data() } as Order;
+
+      // Send order confirmation email
+      const userEmail = await this.getUserEmail(userId);
+      if (userEmail) {
+        try {
+          await emailService.sendOrderConfirmationEmail(createdOrder, userEmail);
+        } catch (emailError) {
+          console.error('Failed to send order confirmation email:', emailError);
+          // Don't fail the order creation if email fails
+        }
+      }
+
+      return createdOrder;
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       console.error('Create order error:', error);
@@ -290,13 +321,35 @@ class OrderService {
         throw new AppError('Order not found', 404);
       }
 
+      const currentOrder = { id: doc.id, ...doc.data() } as Order;
+      const previousStatus = currentOrder.orderStatus;
+
       await docRef.update({
         orderStatus: status,
         updatedAt: FieldValue.serverTimestamp(),
       });
 
       const updatedDoc = await docRef.get();
-      return { id: updatedDoc.id, ...updatedDoc.data() } as Order;
+      const updatedOrder = { id: updatedDoc.id, ...updatedDoc.data() } as Order;
+
+      // Send status update email
+      if (currentOrder.userId) {
+        const userEmail = await this.getUserEmail(currentOrder.userId);
+        if (userEmail) {
+          try {
+            await emailService.sendOrderStatusUpdateEmail(
+              updatedOrder,
+              userEmail,
+              previousStatus
+            );
+          } catch (emailError) {
+            console.error('Failed to send order status update email:', emailError);
+            // Don't fail the status update if email fails
+          }
+        }
+      }
+
+      return updatedOrder;
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       console.error('Update order status error:', error);
@@ -337,7 +390,29 @@ class OrderService {
       await docRef.update(updateData);
 
       const updatedDoc = await docRef.get();
-      return { id: updatedDoc.id, ...updatedDoc.data() } as Order;
+      const updatedOrder = { id: updatedDoc.id, ...updatedDoc.data() } as Order;
+
+      // Send payment confirmation email when payment is completed
+      if (status === 'completed') {
+        const order = { id: doc.id, ...doc.data() } as Order;
+        if (order.userId) {
+          const userEmail = await this.getUserEmail(order.userId);
+          if (userEmail && mpesaReceiptNumber) {
+            try {
+              await emailService.sendPaymentConfirmationEmail(
+                updatedOrder,
+                userEmail,
+                mpesaReceiptNumber
+              );
+            } catch (emailError) {
+              console.error('Failed to send payment confirmation email:', emailError);
+              // Don't fail the payment update if email fails
+            }
+          }
+        }
+      }
+
+      return updatedOrder;
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       console.error('Update payment status error:', error);
@@ -379,7 +454,22 @@ class OrderService {
       });
 
       const updatedDoc = await docRef.get();
-      return { id: updatedDoc.id, ...updatedDoc.data() } as Order;
+      const cancelledOrder = { id: updatedDoc.id, ...updatedDoc.data() } as Order;
+
+      // Send cancellation email
+      if (order.userId) {
+        const userEmail = await this.getUserEmail(order.userId);
+        if (userEmail) {
+          try {
+            await emailService.sendOrderCancellationEmail(cancelledOrder, userEmail);
+          } catch (emailError) {
+            console.error('Failed to send order cancellation email:', emailError);
+            // Don't fail the cancellation if email fails
+          }
+        }
+      }
+
+      return cancelledOrder;
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       console.error('Cancel order error:', error);
