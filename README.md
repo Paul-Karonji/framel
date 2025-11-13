@@ -55,17 +55,23 @@ backend/
 │   │   ├── auth.routes.ts       # Auth endpoints
 │   │   ├── product.routes.ts    # Product endpoints
 │   │   ├── category.routes.ts   # Category endpoints
-│   │   └── cart.routes.ts       # Cart endpoints
+│   │   ├── cart.routes.ts       # Cart endpoints
+│   │   ├── order.routes.ts      # Order endpoints
+│   │   └── payment.routes.ts    # Payment endpoints
 │   ├── controllers/             # Request handlers
 │   │   ├── auth.controller.ts
 │   │   ├── product.controller.ts
 │   │   ├── category.controller.ts
-│   │   └── cart.controller.ts
+│   │   ├── cart.controller.ts
+│   │   ├── order.controller.ts
+│   │   └── payment.controller.ts
 │   ├── services/                # Business logic
 │   │   ├── auth.service.ts
 │   │   ├── product.service.ts
 │   │   ├── category.service.ts
-│   │   └── cart.service.ts
+│   │   ├── cart.service.ts
+│   │   ├── order.service.ts
+│   │   └── payment.service.ts
 │   ├── types/                   # TypeScript types
 │   │   └── index.ts
 │   ├── app.ts                   # Express app setup
@@ -173,6 +179,47 @@ Supports both authenticated users and guest carts. Guest users should pass `gues
 | Method | Endpoint | Description | Auth | Body |
 |--------|----------|-------------|------|------|
 | POST | `/api/cart/sync` | Sync guest cart to user cart | User | `{ guestId }` |
+
+### Orders (`/api/orders`)
+
+#### User Order Operations (Requires Auth)
+
+| Method | Endpoint | Description | Body |
+|--------|----------|-------------|------|
+| POST | `/api/orders` | Create order from cart | `{ items, deliveryAddress, deliveryDate, paymentMethod }` |
+| GET | `/api/orders/user/me` | Get my orders | Query: `page`, `limit`, `status` |
+| GET | `/api/orders/:id` | Get order by ID | - |
+| GET | `/api/orders/order/:orderId` | Get order by order ID (FRM-xxx) | - |
+| POST | `/api/orders/:id/cancel` | Cancel unpaid order | - |
+
+#### Admin Order Operations (Requires Admin)
+
+| Method | Endpoint | Description | Body/Query |
+|--------|----------|-------------|------------|
+| GET | `/api/orders` | Get all orders | Query: `page`, `limit`, `status`, `paymentStatus` |
+| GET | `/api/orders/stats` | Get order statistics | - |
+| PATCH | `/api/orders/:id/status` | Update order status | `{ status }` |
+
+### Payments (`/api/payment`)
+
+#### M-Pesa Payment Operations (Requires Auth)
+
+| Method | Endpoint | Description | Body |
+|--------|----------|-------------|------|
+| POST | `/api/payment/mpesa/initiate` | Initiate M-Pesa STK Push | `{ orderId, phone, amount }` |
+| GET | `/api/payment/mpesa/status/:checkoutRequestId` | Query payment status | - |
+
+#### M-Pesa Callbacks (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/payment/mpesa/callback` | M-Pesa payment callback (automated) |
+
+#### Admin Payment Operations (Requires Admin)
+
+| Method | Endpoint | Description | Body |
+|--------|----------|-------------|------|
+| POST | `/api/payment/verify` | Manually verify payment | `{ orderId, mpesaReceiptNumber }` |
 
 ## 🔐 Authentication
 
@@ -373,14 +420,17 @@ npm run build
 - [x] Cart routes & controller (API endpoints)
 - [x] Support for both authenticated and guest users
 
-### Phase 5: Orders & Payments
-- [ ] Order service & endpoints
-- [ ] Order creation from cart
-- [ ] M-Pesa STK Push integration
-- [ ] Payment callbacks & verification
-- [ ] Order status management (processing → delivered)
-- [ ] Order tracking & history
-- [ ] Email notifications (order confirmation, status updates)
+### Phase 5: Orders & Payments ✅ COMPLETE
+- [x] Order service with business logic
+- [x] Order creation from cart with validation
+- [x] Order ID generation (FRM-YYYYMMDD-XXXX format)
+- [x] Stock management (reduce on order, restore on cancel)
+- [x] M-Pesa STK Push integration
+- [x] Payment callbacks & verification
+- [x] Order status management (processing → delivered)
+- [x] Order tracking & history
+- [x] Order statistics for admin
+- [ ] **Email notifications (order confirmation, status updates)** - TODO Phase 5.1
 
 ### Phase 6: Reviews & Wishlist
 - [ ] Product reviews & ratings
@@ -437,10 +487,16 @@ For issues or questions:
 - Complete API endpoints for cart operations
 - Cart validation and synchronization
 
-**Phase 5-8:** Not started
+**Phase 5: Orders & Payments** ✅ **COMPLETE**
+- Order management system with unique IDs
+- M-Pesa STK Push payment integration
+- Order tracking and status management
+- Payment callbacks and verification
+
+**Phase 6-8:** Not started
 
 ---
 
-**Current Focus:** Ready for Phase 5 - Orders & Payments (M-Pesa integration)
+**Current Focus:** Ready for Phase 6 - Reviews & Wishlist OR Phase 7 - Admin Analytics
 
 🌸 Happy coding!
