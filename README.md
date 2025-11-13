@@ -57,21 +57,27 @@ backend/
 │   │   ├── category.routes.ts   # Category endpoints
 │   │   ├── cart.routes.ts       # Cart endpoints
 │   │   ├── order.routes.ts      # Order endpoints
-│   │   └── payment.routes.ts    # Payment endpoints
+│   │   ├── payment.routes.ts    # Payment endpoints
+│   │   ├── review.routes.ts     # Review endpoints
+│   │   └── wishlist.routes.ts   # Wishlist endpoints
 │   ├── controllers/             # Request handlers
 │   │   ├── auth.controller.ts
 │   │   ├── product.controller.ts
 │   │   ├── category.controller.ts
 │   │   ├── cart.controller.ts
 │   │   ├── order.controller.ts
-│   │   └── payment.controller.ts
+│   │   ├── payment.controller.ts
+│   │   ├── review.controller.ts
+│   │   └── wishlist.controller.ts
 │   ├── services/                # Business logic
 │   │   ├── auth.service.ts
 │   │   ├── product.service.ts
 │   │   ├── category.service.ts
 │   │   ├── cart.service.ts
 │   │   ├── order.service.ts
-│   │   └── payment.service.ts
+│   │   ├── payment.service.ts
+│   │   ├── review.service.ts
+│   │   └── wishlist.service.ts
 │   ├── types/                   # TypeScript types
 │   │   └── index.ts
 │   ├── app.ts                   # Express app setup
@@ -220,6 +226,46 @@ Supports both authenticated users and guest carts. Guest users should pass `gues
 | Method | Endpoint | Description | Body |
 |--------|----------|-------------|------|
 | POST | `/api/payment/verify` | Manually verify payment | `{ orderId, mpesaReceiptNumber }` |
+
+### Reviews (`/api/reviews`)
+
+#### Public Review Operations
+
+| Method | Endpoint | Description | Query |
+|--------|----------|-------------|-------|
+| GET | `/api/reviews/product/:productId` | Get product reviews | `page`, `limit`, `sortBy`, `sortOrder` |
+| GET | `/api/reviews/product/:productId/stats` | Get review statistics | - |
+| GET | `/api/reviews/:id` | Get review by ID | - |
+
+#### User Review Operations (Requires Auth)
+
+| Method | Endpoint | Description | Body |
+|--------|----------|-------------|------|
+| POST | `/api/reviews` | Create review | `{ productId, rating, comment, images? }` |
+| GET | `/api/reviews/user/me` | Get my reviews | Query: `page`, `limit` |
+| GET | `/api/reviews/check/:productId` | Check if reviewed | - |
+| PUT | `/api/reviews/:id` | Update review | `{ rating?, comment?, images? }` |
+| DELETE | `/api/reviews/:id` | Delete review | - |
+
+#### Admin Review Operations (Requires Admin)
+
+| Method | Endpoint | Description | Query |
+|--------|----------|-------------|-------|
+| GET | `/api/reviews` | Get all reviews | `page`, `limit`, `productId`, `minRating`, `maxRating` |
+
+### Wishlist (`/api/wishlist`)
+
+#### Wishlist Operations (Requires Auth)
+
+| Method | Endpoint | Description | Body |
+|--------|----------|-------------|------|
+| GET | `/api/wishlist` | Get wishlist with products | - |
+| GET | `/api/wishlist/count` | Get wishlist item count | - |
+| GET | `/api/wishlist/check/:productId` | Check if in wishlist | - |
+| POST | `/api/wishlist/items` | Add to wishlist | `{ productId }` |
+| DELETE | `/api/wishlist/items/:productId` | Remove from wishlist | - |
+| DELETE | `/api/wishlist` | Clear wishlist | - |
+| POST | `/api/wishlist/move-to-cart` | Move items to cart | `{ productIds: string[] }` |
 
 ## 🔐 Authentication
 
@@ -432,11 +478,16 @@ npm run build
 - [x] Order statistics for admin
 - [ ] **Email notifications (order confirmation, status updates)** - TODO Phase 5.1
 
-### Phase 6: Reviews & Wishlist
-- [ ] Product reviews & ratings
-- [ ] Review moderation (admin)
-- [ ] Wishlist CRUD operations
-- [ ] User preferences management
+### Phase 6: Reviews & Wishlist ✅ COMPLETE
+- [x] Product reviews & ratings
+- [x] Review CRUD operations
+- [x] Automatic rating calculation & product updates
+- [x] Review statistics (average, distribution)
+- [x] Review moderation (admin can delete any review)
+- [x] Wishlist CRUD operations
+- [x] Wishlist with full product details
+- [x] Move wishlist items to cart
+- [x] Check if product reviewed/wishlisted
 
 ### Phase 7: Admin Dashboard & Analytics
 - [ ] Analytics endpoints (sales, revenue, popular products)
@@ -493,10 +544,16 @@ For issues or questions:
 - Order tracking and status management
 - Payment callbacks and verification
 
-**Phase 6-8:** Not started
+**Phase 6: Reviews & Wishlist** ✅ **COMPLETE**
+- Product reviews and ratings system
+- Wishlist management
+- Automatic product rating updates
+- Review statistics and moderation
+
+**Phase 7-8:** Not started
 
 ---
 
-**Current Focus:** Ready for Phase 6 - Reviews & Wishlist OR Phase 7 - Admin Analytics
+**Current Focus:** Ready for Phase 7 - Admin Dashboard & Analytics OR Phase 8 - Production Enhancements
 
 🌸 Happy coding!

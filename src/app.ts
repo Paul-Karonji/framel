@@ -113,6 +113,8 @@ import categoryRoutes from './routes/category.routes';
 import cartRoutes from './routes/cart.routes';
 import orderRoutes from './routes/order.routes';
 import paymentRoutes from './routes/payment.routes';
+import reviewRoutes from './routes/review.routes';
+import wishlistRoutes from './routes/wishlist.routes';
 // import adminRoutes from './routes/admin.routes';
 
 // Use routes
@@ -122,6 +124,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 // app.use('/api/admin', adminRoutes);
 
 // ============================================
