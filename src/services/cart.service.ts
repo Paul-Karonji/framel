@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { Cart, CartItem, Product } from '../types';
+import { Cart } from '../types';
 import { AppError } from '../middleware/errorHandler';
 import { FieldValue } from 'firebase-admin/firestore';
 import productService from './product.service';
@@ -10,7 +10,6 @@ import productService from './product.service';
  */
 class CartService {
   private collection = db.collection('cart');
-  private productsCollection = db.collection('products');
 
   /**
    * Get cart by user ID (or guest ID)

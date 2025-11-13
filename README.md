@@ -54,16 +54,18 @@ backend/
 │   ├── routes/                  # API routes
 │   │   ├── auth.routes.ts       # Auth endpoints
 │   │   ├── product.routes.ts    # Product endpoints
-│   │   └── category.routes.ts   # Category endpoints
+│   │   ├── category.routes.ts   # Category endpoints
+│   │   └── cart.routes.ts       # Cart endpoints
 │   ├── controllers/             # Request handlers
 │   │   ├── auth.controller.ts
 │   │   ├── product.controller.ts
-│   │   └── category.controller.ts
+│   │   ├── category.controller.ts
+│   │   └── cart.controller.ts
 │   ├── services/                # Business logic
 │   │   ├── auth.service.ts
 │   │   ├── product.service.ts
 │   │   ├── category.service.ts
-│   │   └── cart.service.ts      # Cart logic (no routes yet)
+│   │   └── cart.service.ts
 │   ├── types/                   # TypeScript types
 │   │   └── index.ts
 │   ├── app.ts                   # Express app setup
@@ -151,6 +153,26 @@ backend/
 | POST | `/api/categories` | Create new category | Admin |
 | PUT | `/api/categories/:id` | Update category | Admin |
 | DELETE | `/api/categories/:id` | Delete category | Admin |
+
+### Shopping Cart (`/api/cart`)
+
+#### Cart Operations (Optional Auth)
+Supports both authenticated users and guest carts. Guest users should pass `guestId` in request body or query.
+
+| Method | Endpoint | Description | Body/Query |
+|--------|----------|-------------|------------|
+| GET | `/api/cart` | Get cart with totals | `?guestId=<uuid>` (optional) |
+| POST | `/api/cart/items` | Add item to cart | `{ productId, quantity, guestId? }` |
+| PUT | `/api/cart/items/:productId` | Update item quantity | `{ quantity, guestId? }` |
+| DELETE | `/api/cart/items/:productId` | Remove item from cart | `?guestId=<uuid>` (optional) |
+| DELETE | `/api/cart` | Clear cart | `?guestId=<uuid>` (optional) |
+| GET | `/api/cart/validate` | Validate cart (check stock/prices) | `?guestId=<uuid>` (optional) |
+
+#### Authenticated Cart Operations
+
+| Method | Endpoint | Description | Auth | Body |
+|--------|----------|-------------|------|------|
+| POST | `/api/cart/sync` | Sync guest cart to user cart | User | `{ guestId }` |
 
 ## 🔐 Authentication
 
@@ -340,8 +362,7 @@ npm run build
 - [x] Featured products toggle
 - [x] Sorting and pagination
 
-### Phase 4: Shopping Cart (90% Complete)
-**Service Layer Complete** - Just needs API endpoints!
+### Phase 4: Shopping Cart ✅ COMPLETE
 - [x] Cart service with full business logic
 - [x] Cart CRUD operations (add, update, remove, clear)
 - [x] Guest cart support
@@ -349,7 +370,8 @@ npm run build
 - [x] Stock validation
 - [x] Price calculation (subtotal, delivery fee, total)
 - [x] Cart validation (check stock & price changes)
-- [ ] **TODO: Create cart routes & controller**
+- [x] Cart routes & controller (API endpoints)
+- [x] Support for both authenticated and guest users
 
 ### Phase 5: Orders & Payments
 - [ ] Order service & endpoints
@@ -410,14 +432,15 @@ For issues or questions:
 - Category management system
 - Image upload integration
 
-**Phase 4: Shopping Cart** 🟡 **90% COMPLETE**
-- Cart service fully implemented
-- **Next:** Create cart API endpoints
+**Phase 4: Shopping Cart** ✅ **COMPLETE**
+- Full cart service with guest support
+- Complete API endpoints for cart operations
+- Cart validation and synchronization
 
 **Phase 5-8:** Not started
 
 ---
 
-**Current Focus:** Complete Phase 4 by adding cart routes & controller
+**Current Focus:** Ready for Phase 5 - Orders & Payments (M-Pesa integration)
 
 🌸 Happy coding!
