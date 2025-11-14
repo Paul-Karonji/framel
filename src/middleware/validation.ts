@@ -49,7 +49,16 @@ export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   phone: z
     .string()
-    .regex(/^(\+254|254|0)[17]\d{8}$/, 'Invalid Kenyan phone number'),
+    .regex(/^(\+254|254|0)[71]\d{8}$/, 'Phone number must be a valid Kenyan mobile number (e.g., 0712345678, 0712345678, +254712345678)')
+    .transform((val) => {
+      // Normalize phone number to international format
+      if (val.startsWith('0')) {
+        return '+254' + val.substring(1);
+      } else if (val.startsWith('254') && !val.startsWith('+')) {
+        return '+' + val;
+      }
+      return val;
+    }),
 });
 
 export const loginSchema = z.object({
@@ -88,7 +97,7 @@ export const createOrderSchema = z.object({
     .min(1, 'At least one item is required'),
   deliveryAddress: z.object({
     fullName: z.string().min(2, 'Full name is required'),
-    phone: z.string().regex(/^(\+254|254|0)[17]\d{8}$/, 'Invalid phone number'),
+    phone: z.string().regex(/^(\+254|254|0)[71]\d{8}$/, 'Invalid Kenyan mobile number'),
     address: z.string().min(5, 'Address is required'),
     city: z.string().min(2, 'City is required'),
     additionalInfo: z.string().optional(),
@@ -100,7 +109,7 @@ export const createOrderSchema = z.object({
 // Payment schemas
 export const initiatePaymentSchema = z.object({
   orderId: z.string().min(1, 'Order ID is required'),
-  phone: z.string().regex(/^(\+254|254|0)[17]\d{8}$/, 'Invalid Kenyan phone number'),
+  phone: z.string().regex(/^(\+254|254|0)[71]\d{8}$/, 'Invalid Kenyan mobile number (e.g., 0712345678, +254712345678)'),
   amount: z.number().positive('Amount must be positive'),
 });
 
