@@ -12,6 +12,8 @@ dotenv.config();
 import './config/firebase';
 import './config/email';
 import './config/cloudinary';
+import { setupSwagger } from './config/swagger';
+import { stream } from './config/logger';
 
 // Import types
 import { ApiResponse } from './types';
@@ -37,12 +39,13 @@ app.use(
   })
 );
 
-// Request logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
+// Request logging with Winston
+app.use(
+  morgan(
+    process.env.NODE_ENV === 'development' ? 'dev' : 'combined',
+    { stream }
+  )
+);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -87,6 +90,7 @@ app.get('/api', (_req: Request, res: Response) => {
     message: '🌸 Welcome to Framel API',
     data: {
       version: '1.0.0',
+      documentation: '/api-docs',
       endpoints: {
         health: '/health',
         auth: '/api/auth',
@@ -96,11 +100,19 @@ app.get('/api', (_req: Request, res: Response) => {
         cart: '/api/cart',
         payment: '/api/payment',
         admin: '/api/admin',
+        reviews: '/api/reviews',
+        wishlist: '/api/wishlist',
       },
     },
   };
   res.json(response);
 });
+
+// ============================================
+// API DOCUMENTATION
+// ============================================
+
+setupSwagger(app);
 
 // ============================================
 // API ROUTES
