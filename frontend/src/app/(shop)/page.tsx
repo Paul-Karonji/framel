@@ -172,7 +172,7 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-r from-primary/20 to-secondary/20">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-text-primary mb-4">
-            Make Someone's Day Special
+            Make Someone&apos;s Day Special
           </h2>
           <p className="text-lg text-text-secondary mb-8 max-w-2xl mx-auto">
             Send beautiful flowers to your loved ones. Browse our collection and order now

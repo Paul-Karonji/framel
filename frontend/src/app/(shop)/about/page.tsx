@@ -11,7 +11,7 @@ export default function AboutPage() {
             About Framel
           </h1>
           <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-            We're passionate about bringing the beauty of fresh flowers to your doorstep,
+            We&apos;re passionate about bringing the beauty of fresh flowers to your doorstep,
             one bouquet at a time.
           </p>
         </div>
@@ -26,7 +26,7 @@ export default function AboutPage() {
             </h2>
             <p className="text-text-secondary leading-relaxed mb-6">
               Framel was born from a simple belief: everyone deserves to experience the joy that
-              fresh flowers bring. Founded in Nairobi, we've grown from a small flower shop into
+              fresh flowers bring. Founded in Nairobi, we&apos;ve grown from a small flower shop into
               a trusted online destination for premium floral arrangements.
             </p>
             <p className="text-text-secondary leading-relaxed">
@@ -104,7 +104,7 @@ export default function AboutPage() {
             Get in Touch
           </h2>
           <p className="text-lg text-text-secondary mb-8 max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Reach out to us anytime.
+            Have questions? We&apos;d love to hear from you. Reach out to us anytime.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="mailto:hello@framel.co.ke" className="text-primary hover:text-primary-dark">

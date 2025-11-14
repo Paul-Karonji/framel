@@ -5,7 +5,7 @@
  * Manages cart state for both authenticated and guest users
  */
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { Cart, CartItem, Product } from '@/types';
 import apiClient, { getErrorMessage } from '@/lib/api';
 import { useAuth } from './AuthContext';
@@ -67,7 +67,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   // Fetch cart from backend (for authenticated users)
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       setLoading(true);
       const response = await apiClient.get('/cart');
@@ -80,22 +80,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Refresh cart
-  const refreshCart = async () => {
+  const refreshCart = useCallback(async () => {
     if (isAuthenticated) {
       await fetchCart();
     } else {
       const localItems = loadLocalCart();
       setCart(calculateTotals(localItems));
     }
-  };
+  }, [isAuthenticated, fetchCart]);
 
   // Load cart on mount and when auth changes
   useEffect(() => {
     refreshCart();
-  }, [isAuthenticated]);
+  }, [refreshCart]);
 
   // Add to cart
   const addToCart = async (product: Product, quantity: number) => {

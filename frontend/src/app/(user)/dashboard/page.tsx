@@ -57,7 +57,7 @@ export default function DashboardPage() {
           Welcome back, {user?.displayName}!
         </h1>
         <p className="text-text-secondary">
-          Here's what's happening with your orders and wishlist
+          Here&apos;s what&apos;s happening with your orders and wishlist
         </p>
       </div>
 

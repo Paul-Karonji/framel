@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
                 Check Your Email
               </h2>
               <p className="text-text-secondary mb-6">
-                We've sent you a password reset link. Please check your email and follow the
+                We&apos;ve sent you a password reset link. Please check your email and follow the
                 instructions to reset your password.
               </p>
               <Link href={ROUTES.LOGIN}>
@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
           <CardHeader>
             <CardTitle className="text-2xl text-center">Reset Password</CardTitle>
             <p className="text-sm text-text-secondary text-center">
-              Enter your email address and we'll send you a link to reset your password
+              Enter your email address and we&apos;ll send you a link to reset your password
             </p>
           </CardHeader>
           <CardContent>

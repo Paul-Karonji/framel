@@ -34,8 +34,9 @@ export const ROUTES = {
   ADMIN_PRODUCT_EDIT: (id: string) => `/admin/products/${id}/edit`,
   ADMIN_ORDERS: '/admin/orders',
   ADMIN_ORDER_DETAIL: (id: string) => `/admin/orders/${id}`,
-  ADMIN_CUSTOMERS: '/admin/customers',
-  ADMIN_CUSTOMER_DETAIL: (id: string) => `/admin/customers/${id}`,
+  ADMIN_USERS: '/admin/users',
+  ADMIN_USER_DETAIL: (id: string) => `/admin/users/${id}`,
+  ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_ANALYTICS: '/admin/analytics',
 } as const;
 
@@ -66,6 +67,7 @@ export const ADMIN_ROUTES = [
   ROUTES.ADMIN_DASHBOARD,
   ROUTES.ADMIN_PRODUCTS,
   ROUTES.ADMIN_ORDERS,
-  ROUTES.ADMIN_CUSTOMERS,
+  ROUTES.ADMIN_USERS,
+  ROUTES.ADMIN_CATEGORIES,
   ROUTES.ADMIN_ANALYTICS,
 ];

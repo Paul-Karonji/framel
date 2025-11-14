@@ -124,7 +124,7 @@ export default function LoginPage() {
 
             {/* Register Link */}
             <p className="text-sm text-center text-text-secondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href={ROUTES.REGISTER} className="text-primary hover:text-primary-dark font-medium">
                 Sign up
               </Link>

@@ -61,6 +61,16 @@ export const createProductSchema = z.object({
   occasion: z.string().optional(),
 });
 
+// Product schema for admin forms (allows any category)
+export const productSchema = z.object({
+  name: z.string().min(3, 'Product name must be at least 3 characters'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  price: z.number().positive('Price must be positive'),
+  category: z.string().min(2, 'Category is required'),
+  stock: z.number().int().nonnegative('Stock must be a non-negative integer'),
+  featured: z.boolean().optional(),
+});
+
 // Order schemas
 export const deliveryDetailsSchema = z.object({
   recipientName: z.string().min(2, 'Recipient name is required'),
@@ -118,6 +128,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
 export type CreateProductFormData = z.infer<typeof createProductSchema>;
+export type ProductFormData = z.infer<typeof productSchema>;
 export type DeliveryDetailsFormData = z.infer<typeof deliveryDetailsSchema>;
 export type CreateOrderFormData = z.infer<typeof createOrderSchema>;
 export type MpesaPaymentFormData = z.infer<typeof mpesaPaymentSchema>;

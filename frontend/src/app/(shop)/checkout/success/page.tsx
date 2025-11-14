@@ -48,7 +48,7 @@ function SuccessContent() {
               </h1>
 
               <p className="text-lg text-text-secondary mb-6">
-                Thank you for your order. We'll start preparing your beautiful flowers right away.
+                Thank you for your order. We&apos;ll start preparing your beautiful flowers right away.
               </p>
 
               {/* Order ID */}
@@ -59,11 +59,11 @@ function SuccessContent() {
 
               {/* Info */}
               <div className="bg-primary/5 rounded-lg p-4 mb-6 text-left">
-                <h3 className="font-semibold text-text-primary mb-3">What's Next?</h3>
+                <h3 className="font-semibold text-text-primary mb-3">What&apos;s Next?</h3>
                 <ul className="space-y-2 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
-                    <span>You'll receive a confirmation email shortly</span>
+                    <span>You&apos;ll receive a confirmation email shortly</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
@@ -71,7 +71,7 @@ function SuccessContent() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
-                    <span>Once payment is confirmed, we'll prepare your order</span>
+                    <span>Once payment is confirmed, we&apos;ll prepare your order</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
