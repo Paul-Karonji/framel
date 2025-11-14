@@ -340,6 +340,8 @@ Supports both authenticated users and guest carts. Guest users should pass `gues
 
 ### Getting Started
 
+**📚 Complete Registration Guide:** See [REGISTRATION_GUIDE.md](./REGISTRATION_GUIDE.md) for detailed registration instructions, validation rules, and troubleshooting.
+
 1. **Register a new user:**
    ```bash
    POST /api/auth/register
@@ -347,9 +349,17 @@ Supports both authenticated users and guest carts. Guest users should pass `gues
      "email": "user@example.com",
      "password": "SecurePass123",
      "name": "John Doe",
-     "phone": "254712345678"
+     "phone": "0712345678"
    }
    ```
+
+   **Registration Requirements:**
+   - **Email:** Valid email format
+   - **Password:** Minimum 8 characters with at least one uppercase, one lowercase, and one number
+   - **Name:** At least 2 characters
+   - **Phone:** Valid Kenyan mobile number (Safaricom/Airtel)
+     - Formats accepted: `0712345678`, `+254712345678`, `254712345678`
+     - Automatically normalized to international format
 
 2. **Login with Firebase Client SDK** (frontend):
    ```typescript

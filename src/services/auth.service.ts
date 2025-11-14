@@ -51,12 +51,27 @@ class AuthService {
         // Don't fail registration if email fails
       }
 
-      // Get the created user
+      // Get the created user with proper timestamps
       const userDoc = await db.collection('users').doc(userRecord.uid).get();
-      const user = userDoc.data() as User;
+      const userDataFromDb = userDoc.data();
+
+      // Convert Firestore data to User type
+      const returnUser: User = {
+        uid: userRecord.uid,
+        email: data.email,
+        name: data.name,
+        phone: data.phone,
+        role: 'customer',
+        preferences: {
+          notifications: true,
+          newsletter: false,
+        },
+        createdAt: userDataFromDb?.createdAt,
+        updatedAt: userDataFromDb?.updatedAt,
+      };
 
       return {
-        user,
+        user: returnUser,
         message: 'Registration successful! Welcome to Framel.',
       };
     } catch (error: any) {
