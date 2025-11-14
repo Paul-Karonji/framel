@@ -33,7 +33,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   // Calculate item count
-  const itemCount = cart?.items.reduce((total, item) => total + item.quantity, 0) || 0;
+  const itemCount = (cart?.items || []).reduce((total, item) => total + item.quantity, 0);
 
   // Load cart from localStorage (for guest users)
   const loadLocalCart = (): CartItem[] => {

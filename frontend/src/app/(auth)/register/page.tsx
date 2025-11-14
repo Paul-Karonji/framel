@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      await registerUser(data.email, data.password, data.displayName, data.phone);
+      await registerUser(data.email, data.password, data.name, data.phone);
       router.push(ROUTES.DASHBOARD);
     } catch (error) {
       // Error is handled in AuthContext with toast
@@ -67,14 +67,14 @@ export default function RegisterPage() {
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
                   <Input
-                    {...register('displayName')}
+                    {...register('name')}
                     type="text"
                     placeholder="John Doe"
                     className="pl-10"
                   />
                 </div>
-                {errors.displayName && (
-                  <p className="text-xs text-error mt-1">{errors.displayName.message}</p>
+                {errors.name && (
+                  <p className="text-xs text-error mt-1">{errors.name.message}</p>
                 )}
               </div>
 
@@ -134,7 +134,7 @@ export default function RegisterPage() {
                   <p className="text-xs text-error mt-1">{errors.password.message}</p>
                 )}
                 <p className="text-xs text-text-secondary mt-1">
-                  Must be at least 6 characters
+                  Must be at least 8 characters with uppercase, lowercase, and a number
                 </p>
               </div>
 

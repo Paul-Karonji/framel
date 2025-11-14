@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (
     email: string,
     password: string,
-    displayName: string,
+    name: string,
     phone: string
   ) => {
     try {
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await apiClient.post('/auth/register', {
         email,
         password,
-        displayName,
+        name,
         phone,
       });
 

@@ -141,7 +141,7 @@ export default function ProfilePage() {
               <p className="font-medium text-text-primary">User ID</p>
               <p className="text-sm text-text-secondary">Your unique identifier</p>
             </div>
-            <span className="text-sm text-text-secondary font-mono">{user?.uid.slice(0, 8)}...</span>
+            <span className="text-sm text-text-secondary font-mono">{user?.uid?.slice(0, 8)}...</span>
           </div>
         </CardContent>
       </Card>

@@ -54,6 +54,7 @@ Content-Type: application/json
 - **Type:** String
 - **Minimum Length:** 2 characters
 - **Example:** `John Doe`, `Mary Jane`
+i 
 - **Error:** "Name must be at least 2 characters"
 
 ### 4. Phone
