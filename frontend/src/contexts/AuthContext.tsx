@@ -54,10 +54,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Refresh user data
   const refreshUser = async () => {
+    console.log('[AuthContext] Refreshing user data...');
     if (firebaseUser) {
       const userData = await fetchUserProfile(firebaseUser);
+      console.log('[AuthContext] Fetched user data:', {
+        uid: userData?.uid,
+        email: userData?.email,
+        role: userData?.role
+      });
       setUser(userData);
-      setIsAdmin(userData?.role === 'admin');
+      const newIsAdmin = userData?.role === 'admin';
+      console.log('[AuthContext] Setting isAdmin to:', newIsAdmin);
+      setIsAdmin(newIsAdmin);
+    } else {
+      console.log('[AuthContext] No firebaseUser available for refresh');
     }
   };
 

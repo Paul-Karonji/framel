@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -14,38 +14,49 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin, loading, refreshUser } = useAuth();
   const router = useRouter();
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+  const hasRefreshed = useRef(false);
 
-  // Refresh user data when checking admin access to ensure role is up-to-date
+  // Check access and refresh user data if needed
   useEffect(() => {
     const checkAccess = async () => {
-      if (!loading && isAuthenticated && requireAdmin) {
-        setIsRefreshing(true);
+      // Wait for initial auth check to complete
+      if (loading) return;
+
+      // If requiring admin access and we haven't refreshed yet, refresh user data
+      if (requireAdmin && isAuthenticated && !hasRefreshed.current) {
+        setIsChecking(true);
+        console.log('[ProtectedRoute] Refreshing user data for admin check...');
         try {
-          // Refresh user data to get the latest role from backend
           await refreshUser();
+          console.log('[ProtectedRoute] User data refreshed successfully');
         } catch (error) {
-          console.error('Error refreshing user data:', error);
+          console.error('[ProtectedRoute] Error refreshing user data:', error);
         } finally {
-          setIsRefreshing(false);
+          hasRefreshed.current = true;
+          setIsChecking(false);
+        }
+        return;
+      }
+
+      // Now check access after refresh is complete
+      if (!isChecking) {
+        if (!isAuthenticated) {
+          console.log('[ProtectedRoute] Not authenticated, redirecting to login');
+          router.push(ROUTES.LOGIN);
+        } else if (requireAdmin && !isAdmin) {
+          console.log('[ProtectedRoute] Not admin, redirecting to home. isAdmin:', isAdmin);
+          router.push(ROUTES.HOME);
+        } else {
+          console.log('[ProtectedRoute] Access granted. isAuthenticated:', isAuthenticated, 'isAdmin:', isAdmin);
         }
       }
     };
 
     checkAccess();
-  }, [loading, isAuthenticated, requireAdmin]);
+  }, [loading, isAuthenticated, isAdmin, requireAdmin, isChecking, refreshUser, router]);
 
-  useEffect(() => {
-    if (!loading && !isRefreshing) {
-      if (!isAuthenticated) {
-        router.push(ROUTES.LOGIN);
-      } else if (requireAdmin && !isAdmin) {
-        router.push(ROUTES.HOME);
-      }
-    }
-  }, [isAuthenticated, isAdmin, loading, isRefreshing, requireAdmin, router]);
-
-  if (loading || isRefreshing) {
+  if (loading || isChecking) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <LoadingSpinner size="lg" />
