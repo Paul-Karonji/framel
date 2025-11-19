@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-primary" />
               </div>
-              {stats?.revenue.growth !== undefined && (
+              {stats?.revenue?.growth !== undefined && (
                 <div
                   className={`flex items-center gap-1 text-xs font-medium ${
                     stats.revenue.growth >= 0 ? 'text-success' : 'text-error'
@@ -136,10 +136,10 @@ export default function AdminDashboardPage() {
             <div>
               <p className="text-sm text-text-secondary mb-1">Total Revenue</p>
               <p className="text-2xl font-bold text-text-primary">
-                {formatPrice(stats?.revenue.total || 0)}
+                {formatPrice(stats?.revenue?.total || 0)}
               </p>
               <p className="text-xs text-text-secondary mt-2">
-                Today: {formatPrice(stats?.revenue.today || 0)}
+                Today: {formatPrice(stats?.revenue?.today || 0)}
               </p>
             </div>
           </CardContent>
@@ -152,7 +152,7 @@ export default function AdminDashboardPage() {
               <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
                 <ShoppingCart className="h-6 w-6 text-secondary" />
               </div>
-              {stats?.orders.growth !== undefined && (
+              {stats?.orders?.growth !== undefined && (
                 <div
                   className={`flex items-center gap-1 text-xs font-medium ${
                     stats.orders.growth >= 0 ? 'text-success' : 'text-error'
@@ -169,9 +169,9 @@ export default function AdminDashboardPage() {
             </div>
             <div>
               <p className="text-sm text-text-secondary mb-1">Total Orders</p>
-              <p className="text-2xl font-bold text-text-primary">{stats?.orders.total || 0}</p>
+              <p className="text-2xl font-bold text-text-primary">{stats?.orders?.total || 0}</p>
               <p className="text-xs text-text-secondary mt-2">
-                Pending: {stats?.orders.pending || 0}
+                Pending: {stats?.orders?.pending || 0}
               </p>
             </div>
           </CardContent>
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
               <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
                 <Users className="h-6 w-6 text-accent" />
               </div>
-              {stats?.users.growth !== undefined && (
+              {stats?.users?.growth !== undefined && (
                 <div
                   className={`flex items-center gap-1 text-xs font-medium ${
                     stats.users.growth >= 0 ? 'text-success' : 'text-error'
@@ -201,8 +201,8 @@ export default function AdminDashboardPage() {
             </div>
             <div>
               <p className="text-sm text-text-secondary mb-1">Total Users</p>
-              <p className="text-2xl font-bold text-text-primary">{stats?.users.total || 0}</p>
-              <p className="text-xs text-text-secondary mt-2">New: {stats?.users.new || 0}</p>
+              <p className="text-2xl font-bold text-text-primary">{stats?.users?.total || 0}</p>
+              <p className="text-xs text-text-secondary mt-2">New: {stats?.users?.new || 0}</p>
             </div>
           </CardContent>
         </Card>

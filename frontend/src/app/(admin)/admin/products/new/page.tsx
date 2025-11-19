@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import apiClient from '@/lib/api';
 import { productSchema, ProductFormData } from '@/lib/validations';
 import { ROUTES } from '@/constants/routes';
@@ -18,7 +18,6 @@ export default function NewProductPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageURLs, setImageURLs] = useState<string[]>([]);
-  const [imageInputValue, setImageInputValue] = useState('');
 
   const {
     register,
@@ -31,20 +30,9 @@ export default function NewProductPage() {
     },
   });
 
-  const handleAddImageURL = () => {
-    if (imageInputValue.trim() && imageURLs.length < 5) {
-      setImageURLs([...imageURLs, imageInputValue.trim()]);
-      setImageInputValue('');
-    }
-  };
-
-  const handleRemoveImageURL = (index: number) => {
-    setImageURLs(imageURLs.filter((_, i) => i !== index));
-  };
-
   const onSubmit = async (data: ProductFormData) => {
     if (imageURLs.length === 0) {
-      toast.error('Please add at least one product image URL');
+      toast.error('Please upload at least one product image');
       return;
     }
 
@@ -118,7 +106,16 @@ export default function NewProductPage() {
                   <label className="block text-sm font-medium text-text-primary mb-2">
                     Category *
                   </label>
-                  <Input {...register('category')} placeholder="e.g., bouquets, arrangements" />
+                  <select
+                    {...register('category')}
+                    className="w-full px-3 py-2 border border-primary/30 rounded-md focus:ring-2 focus:ring-primary text-sm"
+                  >
+                    <option value="">Select a category</option>
+                    <option value="roses">Roses</option>
+                    <option value="bouquets">Bouquets</option>
+                    <option value="occasions">Occasions</option>
+                    <option value="corporate">Corporate</option>
+                  </select>
                   {errors.category && (
                     <p className="text-xs text-error mt-1">{errors.category.message}</p>
                   )}
@@ -172,61 +169,8 @@ export default function NewProductPage() {
               <CardHeader>
                 <CardTitle>Product Images</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Image URLs (Max 5)
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={imageInputValue}
-                      onChange={(e) => setImageInputValue(e.target.value)}
-                      placeholder="Enter image URL..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleAddImageURL();
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleAddImageURL}
-                      disabled={imageURLs.length >= 5 || !imageInputValue.trim()}
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Add
-                    </Button>
-                  </div>
-                  <p className="text-xs text-text-secondary mt-1">
-                    Enter Cloudinary or public image URLs
-                  </p>
-                </div>
-
-                {/* Image Preview */}
-                {imageURLs.length > 0 && (
-                  <div className="space-y-2">
-                    {imageURLs.map((url, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 p-2 bg-background rounded-lg border border-primary/10"
-                      >
-                        <span className="text-xs text-text-secondary font-mono flex-1 truncate">
-                          {url}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveImageURL(index)}
-                          className="text-error hover:text-error"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <CardContent>
+                <ImageUpload images={imageURLs} onImagesChange={setImageURLs} maxImages={5} />
               </CardContent>
             </Card>
           </div>
