@@ -27,7 +27,8 @@ export default function ProductsPage() {
         if (filters.sortBy) params.append('sortBy', filters.sortBy);
 
         const response = await apiClient.get(`/products?${params.toString()}`);
-        setProducts(response.data.products || response.data);
+        const productsData = response.data?.data?.data || response.data?.data || response.data?.products || [];
+        setProducts(productsData);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {

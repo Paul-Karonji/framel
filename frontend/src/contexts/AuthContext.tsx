@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserProfile = async (fbUser: FirebaseUser): Promise<User | null> => {
     try {
       const response = await apiClient.get('/auth/profile');
-      return response.data;
+      return response.data.data.user;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;

@@ -17,7 +17,8 @@ export default function HomePage() {
     const fetchFeatured = async () => {
       try {
         const response = await apiClient.get('/products/featured');
-        setFeaturedProducts(response.data);
+        const productsData = response.data?.data?.data || response.data?.data || response.data?.products || [];
+        setFeaturedProducts(productsData);
       } catch (error) {
         console.error('Error fetching featured products:', error);
       } finally {

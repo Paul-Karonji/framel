@@ -65,12 +65,14 @@ export const createProductSchema = z.object({
   occasion: z.string().optional(),
 });
 
-// Product schema for admin forms (allows any category)
+// Product schema for admin forms
 export const productSchema = z.object({
   name: z.string().min(3, 'Product name must be at least 3 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   price: z.number().positive('Price must be positive'),
-  category: z.string().min(2, 'Category is required'),
+  category: z.enum(['roses', 'bouquets', 'occasions', 'corporate'], {
+    errorMap: () => ({ message: 'Please select a valid category' }),
+  }),
   stock: z.number().int().nonnegative('Stock must be a non-negative integer'),
   featured: z.boolean().optional(),
 });

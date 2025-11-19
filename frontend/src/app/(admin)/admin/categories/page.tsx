@@ -38,7 +38,8 @@ export default function AdminCategoriesPage() {
   const fetchCategories = async () => {
     try {
       const response = await apiClient.get('/categories/with-count');
-      setCategories(response.data || []);
+      const categoriesData = response.data?.data?.categories || response.data?.categories || response.data || [];
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (error) {
       console.error('Error fetching categories:', error);
       toast.error('Failed to load categories');
@@ -228,7 +229,7 @@ export default function AdminCategoriesPage() {
               <div>
                 <p className="text-sm text-text-secondary mb-1">Total Products</p>
                 <p className="text-2xl font-bold text-text-primary">
-                  {categories.reduce((sum, cat) => sum + (cat.productCount || 0), 0)}
+                  {(categories || []).reduce((sum, cat) => sum + (cat.productCount || 0), 0)}
                 </p>
               </div>
               <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
