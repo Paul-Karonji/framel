@@ -67,48 +67,50 @@ class ProductService {
         sortOrder = 'desc',
       } = options;
 
-      let query: any = this.collection;
+      // Fetch ALL products from Firestore (no where clauses to avoid index issues)
+      const snapshot = await this.collection.get();
+      console.log('🔍 Firestore snapshot size:', snapshot.size);
+      console.log('🔍 Document IDs:', snapshot.docs.map(doc => doc.id));
 
-      // Filter by category
-      if (category) {
-        query = query.where('category', '==', category);
-      }
-
-      // Filter by featured
-      if (featured !== undefined) {
-        query = query.where('featured', '==', featured);
-      }
-
-      // Filter by stock
-      if (inStock) {
-        query = query.where('stock', '>', 0);
-      }
-
-      // Filter by price range
-      if (minPrice !== undefined) {
-        query = query.where('price', '>=', minPrice);
-      }
-      if (maxPrice !== undefined) {
-        query = query.where('price', '<=', maxPrice);
-      }
-
-      // Sorting
-      const sortField = sortBy === 'date' ? 'createdAt' : sortBy === 'rating' ? 'rating' : 'price';
-      query = query.orderBy(sortField, sortOrder);
-
-      // Get total count
-      const totalSnapshot = await query.get();
-      const total = totalSnapshot.size;
-
-      // Pagination
-      const offset = (page - 1) * limit;
-      query = query.limit(limit).offset(offset);
-
-      const snapshot = await query.get();
       let products = snapshot.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
       })) as Product[];
+
+      console.log('🔍 Products after mapping:', products.length, products.map(p => ({ id: p.id, name: p.name, featured: p.featured })));
+
+      // Filter in memory to avoid Firestore index requirements
+
+      // Filter by category
+      if (category) {
+        products = products.filter(p => p.category === category);
+      }
+
+      // Filter by featured
+      if (featured !== undefined) {
+        products = products.filter(p => p.featured === featured);
+      }
+
+      // Filter by stock
+      if (inStock) {
+        products = products.filter(p => p.stock > 0);
+      }
+
+      // Filter by price range
+      if (minPrice !== undefined) {
+        products = products.filter(p => p.price >= minPrice);
+      }
+      if (maxPrice !== undefined) {
+        products = products.filter(p => p.price <= maxPrice);
+      }
+
+      // Sort in memory
+      const sortField = sortBy === 'date' ? 'createdAt' : sortBy === 'rating' ? 'rating' : 'price';
+      products.sort((a: any, b: any) => {
+        const aVal = sortField === 'createdAt' ? a[sortField]?._seconds || 0 : a[sortField] || 0;
+        const bVal = sortField === 'createdAt' ? b[sortField]?._seconds || 0 : b[sortField] || 0;
+        return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+      });
 
       // Client-side search (Firestore doesn't support full-text search)
       if (search) {
@@ -121,10 +123,15 @@ class ProductService {
         );
       }
 
+      const total = products.length;
       const pages = Math.ceil(total / limit);
 
+      // Apply pagination in memory
+      const offset = (page - 1) * limit;
+      const paginatedProducts = products.slice(offset, offset + limit);
+
       return {
-        data: products,
+        data: paginatedProducts,
         total,
         page,
         pages,
@@ -333,16 +340,18 @@ class ProductService {
    */
   async getFeaturedProducts(limit: number = 10): Promise<Product[]> {
     try {
-      const snapshot = await this.collection
-        .where('featured', '==', true)
-        .where('stock', '>', 0)
-        .limit(limit)
-        .get();
+      // Fetch ALL products from Firestore (no where clauses to avoid index issues)
+      const snapshot = await this.collection.get();
+      const products = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Product[];
 
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Product[];
+      // Filter by featured and stock in memory
+      return products
+        .filter((product) => product.featured === true && product.stock > 0)
+        .slice(0, limit);
     } catch (error) {
       console.error('Get featured products error:', error);
       throw new AppError('Failed to fetch featured products', 500);
