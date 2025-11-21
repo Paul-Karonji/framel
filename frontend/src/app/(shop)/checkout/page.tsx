@@ -36,7 +36,7 @@ export default function CheckoutPage() {
   });
 
   const onSubmit = async (data: DeliveryDetailsFormData) => {
-    if (!cart || cart.items.length === 0) {
+    if (!cart || !cart.items || cart.items.length === 0) {
       toast.error('Your cart is empty');
       return;
     }
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!cart || cart.items.length === 0) {
+  if (!cart || !cart.items || cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-semibold text-text-primary mb-4">Your cart is empty</h2>

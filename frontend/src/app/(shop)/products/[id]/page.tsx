@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import apiClient from '@/lib/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
@@ -18,12 +19,14 @@ export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -51,6 +54,23 @@ export default function ProductDetailPage() {
       await addToCart(product, quantity);
     } finally {
       setIsAdding(false);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!product) return;
+
+    setIsTogglingWishlist(true);
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id);
+      } else {
+        await addToWishlist(product);
+      }
+    } catch (error) {
+      // Error is already handled in context with toast
+    } finally {
+      setIsTogglingWishlist(false);
     }
   };
 
@@ -107,9 +127,8 @@ export default function ProductDetailPage() {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative aspect-square rounded-lg overflow-hidden ${
-                      selectedImage === index ? 'ring-2 ring-primary' : ''
-                    }`}
+                    className={`relative aspect-square rounded-lg overflow-hidden ${selectedImage === index ? 'ring-2 ring-primary' : ''
+                      }`}
                   >
                     <Image src={url} alt={`${product.name} ${index + 1}`} fill className="object-cover" />
                   </button>
@@ -222,8 +241,17 @@ export default function ProductDetailPage() {
                 )}
               </Button>
 
-              <Button variant="outline" size="lg">
-                <Heart className="h-5 w-5" />
+              <Button
+                onClick={handleToggleWishlist}
+                disabled={isTogglingWishlist}
+                variant="outline"
+                size="lg"
+                aria-label={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <Heart
+                  className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-primary text-primary' : ''
+                    }`}
+                />
               </Button>
             </div>
 

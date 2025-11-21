@@ -26,8 +26,15 @@ export default function ProductsPage() {
         if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
         if (filters.sortBy) params.append('sortBy', filters.sortBy);
 
+        // Add cache buster to prevent 304 issues with stale data
+        params.append('_t', Date.now().toString());
+
         const response = await apiClient.get(`/products?${params.toString()}`);
-        const productsData = response.data?.data?.data || response.data?.data || response.data?.products || [];
+        console.log('📦 Frontend received products:', response.data);
+
+        const productsData = response.data?.data?.data || response.data?.data?.products || response.data?.products || [];
+        console.log('📦 Parsed products:', productsData.length, productsData);
+
         setProducts(productsData);
       } catch (error) {
         console.error('Error fetching products:', error);

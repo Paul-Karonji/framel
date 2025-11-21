@@ -5,12 +5,14 @@ import { ShoppingCart, User, Heart, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { ROUTES } from '@/constants/routes';
 import { Badge } from '@/components/ui/badge';
 
 export function Header() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const { itemCount } = useCart();
+  const { wishlistCount } = useWishlist();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -64,9 +66,17 @@ export function Header() {
 
             {/* Wishlist */}
             {isAuthenticated && (
-              <Link href={ROUTES.WISHLIST}>
+              <Link href={ROUTES.WISHLIST} className="relative">
                 <Button variant="ghost" size="icon">
                   <Heart className="h-5 w-5" />
+                  {wishlistCount > 0 && (
+                    <Badge
+                      variant="default"
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {wishlistCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
             )}

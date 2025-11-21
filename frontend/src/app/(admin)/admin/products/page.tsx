@@ -53,7 +53,7 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     try {
       const response = await apiClient.get('/products?limit=100');
-      const productsData = response.data?.data?.data || response.data?.data || response.data?.products || [];
+      const productsData = response.data?.data?.data || response.data?.data?.products || response.data?.products || [];
       setProducts(productsData);
       setFilteredProducts(productsData);
     } catch (error) {

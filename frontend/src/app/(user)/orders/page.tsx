@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Package, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Package, Search, RefreshCw } from 'lucide-react';
 import { Order } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,15 +11,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/common/EmptyState';
 import apiClient from '@/lib/api';
+import { useCart } from '@/contexts/CartContext';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { ROUTES } from '@/constants/routes';
+import toast from 'react-hot-toast';
 
 export default function OrdersPage() {
+  const router = useRouter();
+  const { addToCart } = useCart();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [reorderingId, setReorderingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -71,6 +77,49 @@ export default function OrdersPage() {
         return 'bg-secondary/10 text-secondary';
       default:
         return 'bg-primary/10 text-primary';
+    }
+  };
+
+  const handleReorder = async (order: Order) => {
+    setReorderingId(order.id);
+    try {
+      let addedCount = 0;
+      let skippedCount = 0;
+
+      // Fetch current product details and add to cart
+      for (const item of order.items) {
+        try {
+          // Fetch product to check current stock and details
+          const response = await apiClient.get(`/products/${item.productId}`);
+          const product = response.data;
+
+          if (product.stock > 0) {
+            // Add to cart with original quantity or available stock, whichever is less
+            const quantity = Math.min(item.quantity, product.stock);
+            await addToCart(product, quantity);
+            addedCount++;
+          } else {
+            skippedCount++;
+          }
+        } catch (error) {
+          console.error(`Error adding product ${item.productId}:`, error);
+          skippedCount++;
+        }
+      }
+
+      if (addedCount > 0) {
+        toast.success(`${addedCount} item(s) added to cart`);
+        if (skippedCount > 0) {
+          toast.error(`${skippedCount} item(s) out of stock`);
+        }
+        router.push(ROUTES.CART);
+      } else {
+        toast.error('All items are out of stock');
+      }
+    } catch (error) {
+      toast.error('Failed to reorder items');
+    } finally {
+      setReorderingId(null);
     }
   };
 
@@ -140,9 +189,9 @@ export default function OrdersPage() {
           action={
             !searchQuery && filterStatus === 'all'
               ? {
-                  label: 'Start Shopping',
-                  onClick: () => (window.location.href = ROUTES.PRODUCTS),
-                }
+                label: 'Start Shopping',
+                onClick: () => (window.location.href = ROUTES.PRODUCTS),
+              }
               : undefined
           }
         />
@@ -199,9 +248,21 @@ export default function OrdersPage() {
                       <p className="text-xl font-bold text-primary">{formatPrice(order.total)}</p>
                     </div>
 
-                    <Link href={ROUTES.ORDER_DETAIL(order.id)}>
-                      <Button variant="outline">View Details</Button>
-                    </Link>
+                    <div className="flex flex-col gap-2">
+                      <Link href={ROUTES.ORDER_DETAIL(order.id)}>
+                        <Button variant="outline" className="w-full">View Details</Button>
+                      </Link>
+                      <Button
+                        onClick={() => handleReorder(order)}
+                        disabled={reorderingId === order.id}
+                        size="sm"
+                        variant="default"
+                        className="w-full"
+                      >
+                        <RefreshCw className={`h-4 w-4 mr-2 ${reorderingId === order.id ? 'animate-spin' : ''}`} />
+                        {reorderingId === order.id ? 'Reordering...' : 'Reorder'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

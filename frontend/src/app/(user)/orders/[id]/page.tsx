@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Package, MapPin, CreditCard, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, CreditCard, Phone, Mail, RefreshCw } from 'lucide-react';
 import { Order } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,15 +10,19 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import apiClient from '@/lib/api';
+import { useCart } from '@/contexts/CartContext';
 import { formatPrice, formatDate } from '@/lib/utils';
+import { ROUTES } from '@/constants/routes';
 import toast from 'react-hot-toast';
 
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { addToCart } = useCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -50,6 +54,49 @@ export default function OrderDetailPage() {
       toast.error(error.response?.data?.message || 'Failed to cancel order');
     } finally {
       setCancelling(false);
+    }
+  };
+
+  const handleReorder = async () => {
+    if (!order) return;
+
+    setReordering(true);
+    try {
+      let addedCount = 0;
+      let skippedCount = 0;
+
+      // Fetch current product details and add to cart
+      for (const item of order.items) {
+        try {
+          const response = await apiClient.get(`/products/${item.productId}`);
+          const product = response.data;
+
+          if (product.stock > 0) {
+            const quantity = Math.min(item.quantity, product.stock);
+            await addToCart(product, quantity);
+            addedCount++;
+          } else {
+            skippedCount++;
+          }
+        } catch (error) {
+          console.error(`Error adding product ${item.productId}:`, error);
+          skippedCount++;
+        }
+      }
+
+      if (addedCount > 0) {
+        toast.success(`${addedCount} item(s) added to cart`);
+        if (skippedCount > 0) {
+          toast.error(`${skippedCount} item(s) out of stock`);
+        }
+        router.push(ROUTES.CART);
+      } else {
+        toast.error('All items are out of stock');
+      }
+    } catch (error) {
+      toast.error('Failed to reorder items');
+    } finally {
+      setReordering(false);
     }
   };
 
@@ -123,8 +170,8 @@ export default function OrderDetailPage() {
                   {order.status === 'delivered'
                     ? 'Your order has been delivered'
                     : order.status === 'cancelled'
-                    ? 'This order was cancelled'
-                    : 'Your order is being processed'}
+                      ? 'This order was cancelled'
+                      : 'Your order is being processed'}
                 </p>
               </div>
             </div>
@@ -250,6 +297,19 @@ export default function OrderDetailPage() {
                   <span>Order Date: {formatDate(order.createdAt)}</span>
                 </div>
               </div>
+
+              <Separator />
+
+              {/* Reorder Button */}
+              <Button
+                onClick={handleReorder}
+                disabled={reordering}
+                className="w-full"
+                size="lg"
+              >
+                <RefreshCw className={`h-5 w-5 mr-2 ${reordering ? 'animate-spin' : ''}`} />
+                {reordering ? 'Reordering...' : 'Reorder All Items'}
+              </Button>
             </CardContent>
           </Card>
 
