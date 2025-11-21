@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { ROUTES } from '@/constants/routes';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -19,7 +20,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [isAdding, setIsAdding] = useState(false);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,8 +43,27 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const handleToggleWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsTogglingWishlist(true);
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id);
+      } else {
+        await addToWishlist(product);
+      }
+    } catch (error) {
+      // Error is already handled in context with toast
+    } finally {
+      setIsTogglingWishlist(false);
+    }
+  };
+
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
+  const inWishlist = isInWishlist(product.id);
 
   return (
     <Link href={ROUTES.PRODUCT_DETAIL(product.id)}>
@@ -65,14 +87,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Wishlist Button */}
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toast.success('Added to wishlist!');
-            }}
-            className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+            onClick={handleToggleWishlist}
+            disabled={isTogglingWishlist}
+            className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors disabled:opacity-50"
+            aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           >
-            <Heart className="h-4 w-4 text-primary" />
+            <Heart
+              className={`h-4 w-4 transition-colors ${inWishlist ? 'fill-primary text-primary' : 'text-primary'
+                }`}
+            />
           </button>
         </div>
 

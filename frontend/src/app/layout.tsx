@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { WishlistProvider } from '@/contexts/WishlistContext';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({
@@ -41,32 +42,34 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body>
         <AuthProvider>
-          <CartProvider>
-            {children}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#FFFFFF',
-                  color: '#3A3A3A',
-                  border: '1px solid #E89FAE',
-                },
-                success: {
-                  iconTheme: {
-                    primary: '#7BAE7F',
-                    secondary: '#FFFFFF',
+          <WishlistProvider>
+            <CartProvider>
+              {children}
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#FFFFFF',
+                    color: '#3A3A3A',
+                    border: '1px solid #E89FAE',
                   },
-                },
-                error: {
-                  iconTheme: {
-                    primary: '#E57373',
-                    secondary: '#FFFFFF',
+                  success: {
+                    iconTheme: {
+                      primary: '#7BAE7F',
+                      secondary: '#FFFFFF',
+                    },
                   },
-                },
-              }}
-            />
-          </CartProvider>
+                  error: {
+                    iconTheme: {
+                      primary: '#E57373',
+                      secondary: '#FFFFFF',
+                    },
+                  },
+                }}
+              />
+            </CartProvider>
+          </WishlistProvider>
         </AuthProvider>
       </body>
     </html>

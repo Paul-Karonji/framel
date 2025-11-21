@@ -51,8 +51,8 @@ class ProductController {
       search: search as string,
       minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
       maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
-      featured: featured === 'true',
-      inStock: inStock === 'true',
+      featured: featured !== undefined ? featured === 'true' : undefined,
+      inStock: inStock !== undefined ? inStock === 'true' : undefined,
       sortBy: sortBy as 'price' | 'date' | 'rating',
       sortOrder: sortOrder as 'asc' | 'desc',
     };
