@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { Product, ProductFilters } from '@/types';
+import { Product, ProductFilters, ProductCategory } from '@/types';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ export default function CategoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<ProductFilters>({
-    category: slug,
+    category: slug as ProductCategory,
   });
 
   // Get display name for category
