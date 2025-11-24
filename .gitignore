@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+.env.production
 
 # Firebase service account (contains private keys)
 framel-production-firebase-adminsdk-fbsvc-3a2d706deb.json
