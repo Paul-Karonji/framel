@@ -10,8 +10,8 @@ export default function TermsPage() {
                 <section>
                     <h2 className="text-2xl font-serif font-semibold text-gray-900 mb-4">1. Agreement to Terms</h2>
                     <p>
-                        These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you") and Framel ("we," "us" or "our"),
-                        concerning your access to and use of the Framel website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the "Site").
+                        These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;you&quot;) and Framel (&quot;we,&quot; &quot;us&quot; or &quot;our&quot;),
+                        concerning your access to and use of the Framel website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the &quot;Site&quot;).
                     </p>
                 </section>
 

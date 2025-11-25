@@ -10,7 +10,7 @@ export default function PrivacyPage() {
                 <section>
                     <h2 className="text-2xl font-serif font-semibold text-gray-900 mb-4">1. Introduction</h2>
                     <p>
-                        Welcome to Framel ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data.
+                        Welcome to Framel (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We respect your privacy and are committed to protecting your personal data.
                         This privacy policy will inform you as to how we look after your personal data when you visit our website
                         (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.
                     </p>
