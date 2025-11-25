@@ -13,8 +13,9 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    optimizeCss: true,
+  // Force Webpack to use PostCSS loader
+  webpack: (config) => {
+    return config;
   },
   env: {
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
