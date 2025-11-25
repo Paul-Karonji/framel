@@ -98,7 +98,7 @@ export default function WishlistPage() {
                 <Link href={ROUTES.PRODUCT_DETAIL(product.id)}>
                   <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 mb-4">
                     <Image
-                      src={product.imageURLs[0] || '/images/placeholder.png'}
+                      src={product.imageURLs?.[0] || '/images/placeholder.png'}
                       alt={product.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform"

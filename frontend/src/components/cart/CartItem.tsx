@@ -31,7 +31,7 @@ export function CartItem({ item }: CartItemProps) {
       <Link href={ROUTES.PRODUCT_DETAIL(product.id)} className="flex-shrink-0">
         <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100">
           <Image
-            src={product.imageURLs[0] || '/images/placeholder.png'}
+            src={product.imageURLs?.[0] || '/images/placeholder.png'}
             alt={product.name}
             fill
             className="object-cover"

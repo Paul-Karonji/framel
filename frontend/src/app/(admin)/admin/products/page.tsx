@@ -211,13 +211,12 @@ export default function AdminProductsPage() {
                       </td>
                       <td className="p-4">
                         <span
-                          className={`text-sm font-medium ${
-                            product.stock === 0
+                          className={`text-sm font-medium ${product.stock === 0
                               ? 'text-error'
                               : product.stock <= 10
-                              ? 'text-accent'
-                              : 'text-success'
-                          }`}
+                                ? 'text-accent'
+                                : 'text-success'
+                            }`}
                         >
                           {product.stock}
                         </span>
