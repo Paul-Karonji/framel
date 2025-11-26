@@ -109,7 +109,7 @@ export default function ProductDetailPage() {
             {/* Main Image */}
             <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 mb-4">
               <Image
-                src={product.imageURLs[selectedImage] || '/images/placeholder.png'}
+                src={product.imageURLs?.[selectedImage] || '/images/placeholder.png'}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -121,7 +121,7 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Thumbnail Images */}
-            {product.imageURLs.length > 1 && (
+            {product.imageURLs && product.imageURLs.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
                 {product.imageURLs.map((url, index) => (
                   <button
