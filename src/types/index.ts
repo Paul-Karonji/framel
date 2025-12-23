@@ -77,6 +77,8 @@ export interface Order {
   paymentMethod: 'mpesa';
   paymentStatus: 'pending' | 'completed' | 'failed';
   mpesaReceiptNumber?: string;
+  checkoutRequestId?: string; // M-Pesa STK push checkout request ID
+  merchantRequestId?: string; // M-Pesa STK push merchant request ID
   orderStatus: 'processing' | 'confirmed' | 'dispatched' | 'delivered' | 'cancelled';
   createdAt: Timestamp;
   updatedAt: Timestamp;
