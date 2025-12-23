@@ -159,7 +159,9 @@ class AuthService {
       const userRecord = await auth.getUserByEmail(email);
 
       // Generate password reset link
-      const resetLink = await auth.generatePasswordResetLink(email);
+      const resetLink = await auth.generatePasswordResetLink(email, {
+        url: `${process.env.CORS_ORIGIN}/reset-password`,
+      });
 
       // Send email
       await sendEmail(

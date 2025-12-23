@@ -44,6 +44,16 @@ export const resetPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
 });
 
+export const newPasswordSchema = z
+  .object({
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+
 export const updateProfileSchema = z.object({
   displayName: z.string().min(2, 'Name must be at least 2 characters').optional(),
   phone: z
@@ -132,6 +142,7 @@ export const addressSchema = z.object({
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type NewPasswordFormData = z.infer<typeof newPasswordSchema>;
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
 export type CreateProductFormData = z.infer<typeof createProductSchema>;
 export type ProductFormData = z.infer<typeof productSchema>;
