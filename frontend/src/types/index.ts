@@ -34,3 +34,24 @@ export interface ApiError {
   code?: string;
   field?: string;
 }
+
+export interface Order {
+  id: string;
+  orderId: string; // Custom format: FRM-20251113-0001
+  userId?: string; // Optional for guest orders
+  guestId?: string; // For guest tracking
+  items: OrderItem[];
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  deliveryAddress: Address;
+  deliveryDate: Timestamp;
+  paymentMethod: 'mpesa';
+  paymentStatus: 'pending' | 'completed' | 'failed';
+  mpesaReceiptNumber?: string;
+  checkoutRequestId?: string; // M-Pesa STK push checkout request ID
+  merchantRequestId?: string; // M-Pesa STK push merchant request ID
+  orderStatus: 'processing' | 'confirmed' | 'dispatched' | 'delivered' | 'cancelled';
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}

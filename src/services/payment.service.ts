@@ -87,6 +87,13 @@ class PaymentService {
         );
       }
 
+      // Store payment tracking details in order
+      await orderService.updateOrderPaymentTracking(
+        orderId,
+        data.MerchantRequestID,
+        data.CheckoutRequestID
+      );
+
       return {
         merchantRequestId: data.MerchantRequestID,
         checkoutRequestId: data.CheckoutRequestID,
@@ -148,20 +155,44 @@ class PaymentService {
           transactionDate,
         });
 
-        // Find order by merchant request ID or checkout request ID
-        // Since we don't store these in the order, we'll need to implement a temporary
-        // payment tracking collection or use the AccountReference from the callback
-        // For now, we'll log the success
+        // Find order by checkout request ID
+        if (stkCallback.CheckoutRequestID) {
+          try {
+            const order = await orderService.getOrderByCheckoutRequestId(
+              stkCallback.CheckoutRequestID
+            );
 
-        // TODO: Update order payment status
-        // This requires either:
-        // 1. Storing merchantRequestId/checkoutRequestId when initiating payment
-        // 2. Or passing orderId in callback URL and extracting it
-        // For now, just log
-        console.log('Payment completed, order should be updated');
+            if (order) {
+              // Update order payment status
+              await orderService.updatePaymentStatus(
+                order.id,
+                'completed',
+                mpesaReceiptNumber
+              );
+              console.log(`Order ${order.orderId} payment completed successfully`);
+            }
+          } catch (error) {
+            console.error('Error updating order after payment:', error);
+          }
+        }
       } else {
         console.log('❌ Payment failed:', ResultDesc);
-        // TODO: Update order with failed status
+        
+        // Find order and mark payment as failed
+        if (stkCallback.CheckoutRequestID) {
+          try {
+            const order = await orderService.getOrderByCheckoutRequestId(
+              stkCallback.CheckoutRequestID
+            );
+
+            if (order) {
+              await orderService.updatePaymentStatus(order.id, 'failed');
+              console.log(`Order ${order.orderId} payment marked as failed`);
+            }
+          } catch (error) {
+            console.error('Error updating order after failed payment:', error);
+          }
+        }
       }
     } catch (error) {
       console.error('Callback handling error:', error);

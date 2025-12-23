@@ -358,6 +358,27 @@ class OrderService {
   }
 
   /**
+   * Update order payment tracking details
+   */
+  async updateOrderPaymentTracking(
+    orderId: string,
+    merchantRequestId: string,
+    checkoutRequestId: string
+  ): Promise<void> {
+    try {
+      const docRef = this.collection.doc(orderId);
+      await docRef.update({
+        merchantRequestId,
+        checkoutRequestId,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    } catch (error: any) {
+      console.error('Update payment tracking error:', error);
+      throw new AppError('Failed to update payment tracking', 500);
+    }
+  }
+
+  /**
    * Update payment status
    */
   async updatePaymentStatus(
@@ -474,6 +495,29 @@ class OrderService {
       if (error instanceof AppError) throw error;
       console.error('Cancel order error:', error);
       throw new AppError('Failed to cancel order', 500);
+    }
+  }
+
+  /**
+   * Get order by checkout request ID
+   */
+  async getOrderByCheckoutRequestId(checkoutRequestId: string): Promise<Order> {
+    try {
+      const snapshot = await this.collection
+        .where('checkoutRequestId', '==', checkoutRequestId)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        throw new AppError('Order not found for this checkout request', 404);
+      }
+
+      const doc = snapshot.docs[0];
+      return { id: doc.id, ...doc.data() } as Order;
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      console.error('Get order by checkout request ID error:', error);
+      throw new AppError('Failed to fetch order', 500);
     }
   }
 

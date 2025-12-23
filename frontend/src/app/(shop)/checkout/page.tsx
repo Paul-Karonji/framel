@@ -49,12 +49,26 @@ export default function CheckoutPage() {
         deliveryDetails: data,
       });
 
-      const order = orderResponse.data;
+      const order = orderResponse.data.data.order;
+
+      // Initiate M-Pesa payment
+      try {
+        const paymentResponse = await apiClient.post('/payment/mpesa/initiate', {
+          orderId: order.orderId,
+          phone: data.phone,
+          amount: order.total,
+        });
+
+        if (paymentResponse.data.success) {
+          toast.success('Order placed! Check your phone for M-Pesa prompt.');
+        }
+      } catch (paymentError: any) {
+        console.error('Payment initiation failed:', paymentError);
+        toast.error('Order placed but payment failed. You can pay later.');
+      }
 
       // Clear cart
       await clearCart();
-
-      toast.success('Order placed successfully!');
 
       // Redirect to order success page
       router.push(`${ROUTES.CHECKOUT_SUCCESS}?orderId=${order.orderId}`);
